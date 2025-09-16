@@ -52,8 +52,7 @@ const App = {
     }
 
     onMounted(() => {
-      // auto-load a dog image on mount for visual sanity
-      loadDog()
+      // defer loading content until after login
     })
 
     return { username, password, token, loginError, users, dogUrl, secret, doLogin, loadUsers, loadDog, loadSecret }
@@ -62,38 +61,43 @@ const App = {
     <div style="font-family: sans-serif; margin: 1rem; max-width: 800px;">
       <h1>Refactor Me - Vue + FastAPI</h1>
 
-      <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
-        <h2>Login</h2>
-        <div style="display:flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-          <input placeholder="username" v-model="username" />
-          <input placeholder="password" type="password" v-model="password" />
-          <button @click="doLogin">Login</button>
-          <span v-if="token">Token: {{ token }}</span>
-          <span v-if="loginError" style="color:red;">{{ loginError }}</span>
-        </div>
-      </section>
+      <div v-if="!token">
+        <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
+          <h2>Login</h2>
+          <div style="display:flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <input placeholder="username" v-model="username" />
+            <input placeholder="password" type="password" v-model="password" />
+            <button @click="doLogin">Login</button>
+            <span v-if="loginError" style="color:red;">{{ loginError }}</span>
+          </div>
+        </section>
+      </div>
 
-      <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
-        <h2>Users (JSONPlaceholder)</h2>
-        <button @click="loadUsers">Load Users</button>
-        <ul>
-          <li v-for="u in users" :key="u.id">{{ u.name }} - {{ u.email }}</li>
-        </ul>
-      </section>
+      <div v-else>
+        <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
+          <h2>Users (JSONPlaceholder)</h2>
+          <button @click="loadUsers">Load Users</button>
+          <ul>
+            <li v-for="u in users" :key="u.id">{{ u.name }} - {{ u.email }}</li>
+          </ul>
+        </section>
 
-      <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
-        <h2>Random Dog</h2>
-        <button @click="loadDog">Refresh</button>
-        <div v-if="dogUrl">
-          <img :src="dogUrl" alt="random dog" style="max-width: 100%; height: auto;" />
-        </div>
-      </section>
+        <section style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
+          <h2>Random Dog</h2>
+          <button @click="loadDog">Refresh</button>
+          <div v-if="dogUrl">
+            <img :src="dogUrl" alt="random dog" style="max-width: 100%; height: auto;" />
+          </div>
+        </section>
 
-      <section style="border: 1px solid #ddd; padding: 1rem;">
-        <h2>Secret Data</h2>
-        <button @click="loadSecret">Load Secret</button>
-        <div v-if="secret">{{ secret }}</div>
-      </section>
+        <section style="border: 1px solid #ddd; padding: 1rem;">
+          <h2>Secret Data</h2>
+          <button @click="loadSecret">Load Secret</button>
+          <div v-if="secret">{{ secret }}</div>
+        </section>
+
+        <div style="opacity:0.7;font-size:12px;margin-top:8px;">Token: {{ token }}</div>
+      </div>
     </div>
   `
 }
