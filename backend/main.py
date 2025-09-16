@@ -27,6 +27,7 @@ HARDCODED_TOKEN = "secrettoken"
 # Scattered magic strings (bad)
 JSON_PLACEHOLDER_URL = "https://jsonplaceholder.typicode.com/users"
 DOG_API_URL = "https://dog.ceo/api/breeds/image/random"
+DOG_FALLBACK_URL = "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg"
 
 # Global mutable state (bad)
 STATE = {"last_login_user": None, "users_cache": []}
@@ -80,11 +81,23 @@ def get_users(request: Request):
 def get_random_dog(request: Request):
     # This endpoint doesn't even check auth (inconsistent)
     try:
-        resp = requests.get(DOG_API_URL, timeout=10)
+        resp = requests.get(
+            DOG_API_URL,
+            timeout=10,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "RefactorMe/0.1 (+https://example.invalid)",
+            },
+        )
+        if resp.status_code != 200:
+            return {"image": DOG_FALLBACK_URL, "status": "fallback", "error": f"upstream:{resp.status_code}"}
         payload = resp.json()
-        return {"image": payload.get("message"), "status": payload.get("status", "ok")}
+        image = payload.get("message")
+        if not image:
+            return {"image": DOG_FALLBACK_URL, "status": "fallback", "error": "missing-image"}
+        return {"image": image, "status": payload.get("status", "ok")}
     except Exception as e:
-        return {"image": None, "status": "error", "error": str(e)}
+        return {"image": DOG_FALLBACK_URL, "status": "error", "error": str(e)}
 
 
 @app.get("/secret-data")

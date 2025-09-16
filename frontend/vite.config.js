@@ -4,6 +4,12 @@ import vue from '@vitejs/plugin-vue'
 // Intentionally misusing config: hardcoded backend URL and no envs
 export default defineConfig({
   plugins: [vue()],
+  // Enable runtime template compilation by using the full Vue build
+  resolve: {
+    alias: {
+      vue: 'vue/dist/vue.esm-bundler.js',
+    },
+  },
   server: {
     port: 5173,
     proxy: {
