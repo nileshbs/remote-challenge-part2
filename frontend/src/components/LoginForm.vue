@@ -26,6 +26,9 @@
         </button>
         <span v-if="error" class="error-message">{{ error }}</span>
       </div>
+      <div>
+        <p>Use <strong>admin</strong> / <strong>password123</strong> to log in as sample account.</p>
+      </div>
     </form>
   </section>
 </template>
@@ -38,8 +41,8 @@ export default {
   name: 'LoginForm',
   setup() {
     const { login, isLoading, error, clearError } = useAuth()
-    const username = ref('admin')
-    const password = ref('password123')
+    const username = ref('')
+    const password = ref('')
 
     const handleLogin = async () => {
       clearError()
