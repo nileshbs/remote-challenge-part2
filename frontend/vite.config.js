@@ -1,25 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// Intentionally misusing config: hardcoded backend URL and no envs
 export default defineConfig({
   plugins: [vue()],
-  // Enable runtime template compilation by using the full Vue build
-  resolve: {
-    alias: {
-      vue: 'vue/dist/vue.esm-bundler.js',
-    },
-  },
   server: {
     port: 5173,
-    proxy: {
-      // Proxy not actually used by code, left here confusingly
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      }
-    }
+    host: true, // Allow external connections
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+  define: {
+    // Enable Vue devtools in development
+    __VUE_PROD_DEVTOOLS__: false,
   }
 })
 
